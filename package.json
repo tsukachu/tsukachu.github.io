@@ -11,6 +11,7 @@
     "deploy": "gh-pages"
   },
   "dependencies": {
+    "bootstrap": "^4.4.1",
     "core-js": "^3.4.3",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",
