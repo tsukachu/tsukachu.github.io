@@ -1,6 +1,8 @@
 <template>
   <div class="activity-bar d-flex flex-column">
-    <VerticalList class="mt-auto" :links="links" />
+    <VerticalList :links="linksTop" />
+
+    <VerticalList class="mt-auto" :links="linksBottom" />
   </div>
 </template>
 
@@ -14,7 +16,14 @@ export default {
   },
   data: function() {
     return {
-      links: [
+      linksTop: [
+        {
+          to: "/",
+          faPrefix: "fas",
+          faName: "home"
+        }
+      ],
+      linksBottom: [
         {
           to: "https://github.com/tsukachu/tsukachu.github.io",
           faPrefix: "fab",
