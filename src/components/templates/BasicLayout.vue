@@ -1,6 +1,6 @@
 <template>
-  <div class="basic-layout d-flex flex-column h-100">
-    <div class="d-flex flex-row h-100">
+  <div class="basic-layout min-vh-100 d-flex flex-column">
+    <div class="flex-fill d-flex flex-row">
       <ActivityBar />
 
       <SideBar />
@@ -32,5 +32,13 @@ export default {
 <style lang="scss">
 .content {
   background-color: rgb(30, 30, 30);
+
+  position: absolute;
+  top: 0;
+  bottom: 22px;
+  left: 218px;
+  right: 0;
+
+  overflow-y: auto;
 }
 </style>
