@@ -1,21 +1,31 @@
 version: 2.1
 commands:
   setup:
+    parameters:
+      # Docker image is different for each executors.
+      # So use docker image provider name as prefix.
+      prefix:
+        type: string
+        default: circleci
     steps:
       - checkout
 
       - restore_cache:
           keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-
+            - << parameters.prefix >>-yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - << parameters.prefix >>-yarn-packages-{{ .Branch }}
+            - << parameters.prefix >>-yarn-packages-
 
-      - run: yarn install
+      - run:
+          command: |
+            yarn config set cache-folder ~/.cache
+            yarn install --frozen-lockfile
 
       - save_cache:
           paths:
-            - node_modules
-          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            # Cache both yarn and cypress.
+            - ~/.cache
+          key: << parameters.prefix >>-yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
 executors:
   default-executor:
@@ -45,7 +55,8 @@ jobs:
     executor: for-e2e-testing-executor
 
     steps:
-      - setup
+      - setup:
+          prefix: cypress
 
       - run: yarn test:e2e --headless
 
