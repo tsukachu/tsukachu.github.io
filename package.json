@@ -7,7 +7,12 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "run-s lint:*",
+    "lint:prettier": "prettier --check \"**/*.{js,vue}\"",
+    "lint:eslint": "eslint --ext .js,.vue .",
+    "fix": "run-s fix:*",
+    "fix:prettier": "prettier --write \"**/*.{js,vue}\"",
+    "fix:eslint": "eslint --ext .js,.vue --fix ."
   },
   "dependencies": {
     "core-js": "^3.6.5",
