@@ -4,8 +4,11 @@ module.exports = {
     node: true
   },
   extends: [
-    'plugin:vue/essential',
-    '@vue/standard'
+    'plugin:vue/recommended',
+    'standard',
+    'plugin:prettier/recommended',
+    'prettier/standard',
+    'prettier/vue'
   ],
   parserOptions: {
     parser: 'babel-eslint'
