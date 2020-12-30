@@ -1,24 +1,71 @@
 version: 2.1
-jobs:
-  build:
-    docker:
-      - image: circleci/node:14.15
+commands:
+  restore_deps:
     steps:
-      - checkout
       - restore_cache:
           keys:
-            - v1-dependencies-{{ .Branch }}-{{ checksum "yarn.lock"}}
-            - v1-dependencies-{{ .Branch }}
-            - v1-dependencies-
-      - run: yarn install --frozen-lockfile
+            - v1-deps-{{ .Branch }}-{{ checksum "yarn.lock"}}
+            - v1-deps-{{ .Branch }}
+            - v1-deps-
+  save_deps:
+    steps:
       - save_cache:
-          key: v1-dependencies-{{ .Branch }}-{{ checksum "yarn.lock"}}
+          key: v1-deps-{{ .Branch }}-{{ checksum "yarn.lock"}}
           paths:
-            - ~/.cache/yarn
+            # ~/.cache contains yarn and Cypress
+            - ~/.cache
+            - node_modules
+
+executors:
+  default:
+    docker:
+      - image: circleci/node:14.15
+  cypress:
+    docker:
+      # 14.15 was not registered
+      # https://hub.docker.com/r/cypress/base/tags
+      - image: cypress/base:14.15.0
+    environment:
+      CYPRESS_CACHE_FOLDER: << parameters.dir >>.cache/Cypress
+      # Enable output color
+      TERM: xterm
+    parameters:
+      dir:
+        type: string
+        default: /home/circleci/
+    working_directory: << parameters.dir >>project
+
+jobs:
+  build-lint:
+    executor: default
+    steps:
+      - checkout
+      - restore_deps
+      - run: |
+          yarn install --frozen-lockfile
+      - save_deps
       - run: yarn lint
+  test-unit:
+    executor: default
+    steps:
+      - checkout
+      - restore_deps
+      - run: yarn test:unit
+  test-e2e:
+    executor: cypress
+    steps:
+      - checkout
+      - restore_deps
+      - run: yarn test:e2e --headless
 
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - build
+      - build-lint
+      - test-unit:
+          requires:
+            - build-lint
+      - test-e2e:
+          requires:
+            - build-lint
